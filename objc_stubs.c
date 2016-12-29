@@ -42,3 +42,36 @@ CAMLprim value caml_class_createInstance (value klass, value extraBytes)
   res = Val_id(class_createInstance (Klass_val(klass), Int_val(extraBytes)));
   CAMLreturn(res);
 }
+
+CAMLprim value caml_objc_allocateClassPair (value klass, value name, value extraBytes)
+{
+  CAMLparam3(klass, name, extraBytes);
+  CAMLlocal1(res);
+  Class cls = objc_allocateClassPair (Klass_val(klass), String_val(name), Int_val(extraBytes));
+  res = Val_int(0);
+  if (cls != Nil) {
+    res = caml_alloc (1, 0);
+    Field (res, 0) = Val_klass(cls);
+  }
+  CAMLreturn(res);
+}
+
+CAMLprim value caml_objc_registerClassPair (value klass)
+{
+  CAMLparam1(klass);
+  objc_registerClassPair(Klass_val(klass));
+  CAMLreturn(Val_unit);
+}
+
+CAMLprim value caml_objc_getClass (value name)
+{
+  CAMLparam1(name);
+  CAMLlocal1(res);
+  Class v = objc_getClass(String_val(name));
+  res = Val_int(0);
+  if (v != nil) {
+    res = caml_alloc (1, 0);
+    Field (res, 0) = Val_id(v);
+  }
+  CAMLreturn(res);
+}
